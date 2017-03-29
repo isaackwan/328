@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DatabaseController">
+   <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="Mode">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Database" />
+                  <MenuItem mnemonicParsing="false" onAction="#switchToPlaybackView" text="Playback" />
+                  <MenuItem mnemonicParsing="false" onAction="#switchToPeersView" text="Peers" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <TableView fx:id="songTable" prefHeight="200.0" prefWidth="200.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+        <columns>
+          <TableColumn fx:id="nameColumn" maxWidth="700.0" minWidth="300.0" prefWidth="300.0" text="Song" />
+            <TableColumn maxWidth="300.0" minWidth="300.0" prefWidth="300.0" text="Singer" />
+        </columns>
+      </TableView>
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="2">
+        <items>
+            <Button layoutX="10.0" layoutY="12.0" mnemonicParsing="false" text="Add" />
+            <Button onAction="#persistDatabase" layoutX="100.0" mnemonicParsing="false" text="Save" />
+          <Button onAction="#playSong" mnemonicParsing="false" text="Play" />
+        </items>
+      </ToolBar>
+   </children>
+</GridPane>

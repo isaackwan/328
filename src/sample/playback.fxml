@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.PlaybackController">
+   <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="Mode">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#switchToDatabaseView" text="Database" />
+                <MenuItem mnemonicParsing="false" text="Playback" />
+                <MenuItem mnemonicParsing="false" onAction="#switchToPeersView" text="Peers" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="2">
+        <items>
+          <Button mnemonicParsing="false" onAction="#pause" text="Pause" />
+            <Button mnemonicParsing="false" onDragDetected="#unpause" text="Unpause" />
+        </items>
+      </ToolBar>
+      <SplitPane dividerPositions="0.29797979797979796" prefHeight="100.0" prefWidth="800.0" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+        <items>
+          <AnchorPane maxWidth="400.0" minHeight="0.0" minWidth="400.0" prefWidth="400.0">
+               <children>
+                  <Label layoutX="79.0" layoutY="162.0" text="File (ID):" />
+                  <Label layoutX="79.0" layoutY="181.0" text="Name:" />
+                  <Label layoutX="79.0" layoutY="201.0" text="Singer:" />
+                  <Label layoutX="79.0" layoutY="218.0" text="Album:" />
+                  <Label layoutX="140.0" layoutY="162.0" text="&lt;file&gt;" />
+                  <Label layoutX="140.0" layoutY="182.0" text="&lt;file&gt;" />
+                  <Label layoutX="140.0" layoutY="199.0" text="&lt;file&gt;" />
+                  <Label layoutX="140.0" layoutY="218.0" text="&lt;file&gt;" />
+               </children>
+            </AnchorPane>
+          <AnchorPane maxWidth="400.0" minHeight="0.0" minWidth="400.0" prefWidth="400.0">
+               <children>
+                  <Label layoutX="150.0" layoutY="193.0" text="Lyrics" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</GridPane>

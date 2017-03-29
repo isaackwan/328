@@ -1,0 +1,12 @@
+if (line != null) {
+                    throw new Exception("Playing sth in the background");
+                }
+                line = AudioSystem.getSourceDataLine(song.getFormat());
+                line.open(song.getFormat());
+                line.start();
+                byte[] buf = new byte[40*1024];
+                int bytesRead = 0;
+                while(bytesRead != -1) {
+                    bytesRead = song.read(buf, 0, 40*1024);
+                    line.write(buf, 0, bytesRead);
+                }id
