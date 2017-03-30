@@ -1,33 +1,32 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
+import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class Main extends Application {
     public SongRepo songRepo = new SongRepo();
     public PeerRepo peerRepo = new PeerRepo(songRepo);
     private Stage primaryStage;
     public Player player = new Player();
-    private FileServer fileServer = new FileServer();
+    private FileServer fileServer = new FileServer(9001);
 
+    /**
+     * constructor for the Main class which is created by the JavaFX runtime automatically.
+     * @throws Exception
+     */
     public Main() throws Exception {
         songRepo.seedFromFilesystem();
-        /*synchronized (songRepo) {
-            peerRepo.add(new Peer("http://localhost:2015"));
-        }
-        synchronized (songRepo) {
-            peerRepo.add(new Peer("http://localhost:2016"));
-        }*/
+        StringProperty str = player.filename;
+
     }
 
     @Override
@@ -43,6 +42,15 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.sizeToScene();
         primaryStage.show();
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                Logger.getLogger("Main").info("Caught windows closing event, going to exit() the whole thing..");
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+
     }
 
     public static void main(String[] args) {

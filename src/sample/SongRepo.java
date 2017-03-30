@@ -2,7 +2,6 @@ package sample;
 
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import sun.util.logging.PlatformLogger;
 
 import java.io.*;
 import java.util.Iterator;
@@ -22,19 +21,23 @@ public class SongRepo extends SimpleListProperty<Song> {
      * @throws Exception
      */
     public void seedFromFilesystem() throws Exception {
-        BufferedReader database = new BufferedReader(new FileReader(databasePrefix+"/database.txt"));
-        String line = null;
-        String[] config;
-        while ((line = database.readLine()) != null) {
-            config = line.split(",,");
-            if (config.length != 5) {
-                continue;
+        try (BufferedReader database = new BufferedReader(new FileReader(databasePrefix+"/database.txt"))) {
+            String line = null;
+            String[] config;
+            while ((line = database.readLine()) != null) {
+                config = line.split(",,");
+                if (config.length != 5) {
+                    continue;
+                }
+                add(new LocalSong(databasePrefix+"/"+config[0], config[0], config[2], config[3], config[4]));
             }
-            add(new LocalSong(databasePrefix+"/"+config[0], config[0], config[2], config[3], config[4], Integer.parseInt(config[1])));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger("SongRepo").info("Database seed file not found. Skipping.");
         }
+
     }
 
-    public Song getSong(Song song1)  {
+    public Song getSong(Song song1) throws IndexOutOfBoundsException {
         Iterator<Song> songs = iterator();
         Song song2;
         while(songs.hasNext()) {

@@ -1,11 +1,9 @@
 package sample;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by isaac on 3/29/17.
@@ -35,6 +33,9 @@ public abstract class Song {
     public String getAlbum() {return album.get();}
     public StringProperty albumProperty() {return album;}
     public void setAlbum(String album) {this.album.set(album);}
+    public String getFilename() {return filename;}
+    abstract public long getFilesize() throws IOException;
+    abstract public String getLocation();
     public String toString() {
         return "Song: " + this.name.get();
     }

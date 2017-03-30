@@ -1,64 +1,124 @@
 package sample; /**
  * Created by isaac on 3/28/17.
  */
-import javax.sound.sampled.*;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.SourceDataLine;
 import java.io.EOFException;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Player {
-    private static final Logger LOGGER = Logger.getLogger("Player");
-    private static final int perChunkSize = 1024*1024;
     private SourceDataLine line;
-    private boolean shouldStop = false;
+    private Thread playbackThread;
+    public final BooleanProperty shouldStop = new SimpleBooleanProperty(false);
+    public final BooleanProperty active = new SimpleBooleanProperty(false);
+    public final StringProperty name = new SimpleStringProperty("");
+    public final StringProperty filename = new SimpleStringProperty("");
+    public final StringProperty singer = new SimpleStringProperty("");
+    public final StringProperty album = new SimpleStringProperty("");
+
     public void play(Song song) throws Exception {
         if (line != null && line.isRunning()) {
-            LOGGER.log(Level.WARNING, "The player is already playing stuff.");
+            Logger.getLogger("Player").log(Level.WARNING, "The player is already playing stuff.");
             return;
+        } else if (line != null) {
+            line.flush();
+            line.close();
+            line = null;
+        }
+        name.bind(song.nameProperty());
+        filename.setValue(song.filename);
+        singer.bind(song.singerProperty());
+        album.bind(song.albumProperty());
+        active.set(true);
+
+        synchronized (shouldStop) {
+            shouldStop.set(false);
         }
         line = AudioSystem.getSourceDataLine(song.getFormat());
         line.open(song.getFormat());
         line.start();
-        line.addLineListener(event -> {
-            if (event.getType() == LineEvent.Type.STOP) {
-                shouldStop = false;
-            }
-        });
-        Thread t = new Thread(new Thread() {
+        playbackThread = new Thread(new Thread() {
             @Override
             public void run() {
-                while(!shouldStop) {
-                    byte[] buf = null;
+                byte[] buf = null;
+                while(true) {
+                    synchronized (shouldStop) {
+                        while(shouldStop.get()) {
+                            try {
+                                shouldStop.wait();
+                                Logger.getLogger("Player").info("Resuming playback");
+                            } catch (InterruptedException e) {Logger.getLogger("Player").warning("while waiting for write signal, the thread got interrupted");}
+                        }
+                    }
                     try {
                         buf = song.read();
+                        line.write(buf, 0, buf.length);
                     } catch (EOFException e) {
-                        LOGGER.fine("EOF");
+                        Logger.getLogger("Player").info("EOF reached in Player");
                         break;
                     } catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "Unknown exception thrown", e);
+                        Logger.getLogger("Player").log(Level.SEVERE, "Unknown exception thrown", e);
                     }
-                    line.write(buf, 0, buf.length);
                 }
-                // finished playing
+                line.drain();
+                Logger.getLogger("Player ended, cleaning up...");
+                line.close();
                 line = null;
+                active.set(false);
+                resetLabels();
+                // finished playing
+                //line = null;
             }
         });
-        t.start();
+        playbackThread.start();
     }
 
     public void pause() {
-        line.stop();
+        synchronized (shouldStop) {
+            shouldStop.set(true);
+        }
+        if (line != null) {
+            line.stop();
+        }
     }
 
     public void unpause() {
-        line.start();
+        if (line != null) {
+            line.start();
+        }
+        synchronized (shouldStop) {
+            shouldStop.set(false);
+            shouldStop.notifyAll();
+        }
     }
 
     public void stop() {
-        shouldStop = true;
-        line.stop();
+        if (playbackThread != null) {
+            playbackThread.stop();
+        }
+        if (line != null) {
+            line.flush();
+            line.close();
+        }
         line = null;
-        shouldStop = false;
+        active.set(false);
+    }
+
+    private void resetLabels() {
+        name.unbind();
+        name.set("");
+        filename.unbind();
+        filename.set("");
+        singer.unbind();
+        singer.set("");
+        album.unbind();
+        album.set("");
     }
 }

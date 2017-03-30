@@ -1,13 +1,14 @@
 package sample;
 
-import javax.sound.sampled.AudioFormat;
-import java.io.IOException;
-
 import javafx.beans.property.SimpleStringProperty;
 import org.asynchttpclient.*;
 
+import javax.sound.sampled.AudioFormat;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,18 +18,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by isaac on 3/29/17.
  */
 public class RemoteSong extends Song {
-    private final int BYTES_PER_PIECE = 1024*300;
+    private final static int BYTES_PER_PIECE = 1024*300;
     private AsyncHttpClient httpClient = new DefaultAsyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setMaxConnections(100).build());
     private List<String> uri = new LinkedList<String>();
     private int totalPieces;
     private AtomicBoolean downloaded = new AtomicBoolean();
     private BlockingQueue<byte[]> payload = new LinkedBlockingQueue();
+    private long filesize;
 
-    public RemoteSong(String uri, String filename, String name, String singer, String album, int size) throws Exception {
-        this.uri.add(uri);
+    public RemoteSong(String uri, String filename, String name, String singer, String album, long filesize) throws Exception {
         super.filename = filename;
+        super.name = new SimpleStringProperty(name);
+        super.singer = new SimpleStringProperty(singer);
+        super.album = new SimpleStringProperty(album);
+        this.filesize = filesize;
+        this.uri.add(uri);
         totalPieces = 1000;
-        super.name = new SimpleStringProperty("test2");
     }
 
     @Override
@@ -113,5 +118,19 @@ public class RemoteSong extends Song {
             rtn |= stream.read() << (8*i);
         }
         return rtn;
+    }
+
+    @Override
+    public long getFilesize() {
+        return filesize;
+    }
+
+    public String getLocation() {
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<String> iterator = uri.iterator(); iterator.hasNext();) {
+            sb.append(iterator.next());
+            sb.append(", ");
+        }
+        return sb.toString();
     }
 }

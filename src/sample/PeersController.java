@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.io.IOException;
 
@@ -14,8 +14,10 @@ public class PeersController {
 
     @FXML
     private TextField peerUri;
-    private TableColumn uriColumn;
-    private TableView peersTable;
+    @FXML
+    private TableColumn<Peer, String> uriColumn;
+    @FXML
+    private TableView<Peer> peersTable;
 
     @FXML
     private void addPeer(ActionEvent event) {
@@ -30,7 +32,8 @@ public class PeersController {
 
     @FXML
     private void initialize() {
-        uriColumn.setCellValueFactory(cellData -> cellData);
+        uriColumn.setCellValueFactory(cellData -> cellData.getValue().uri);
+        uriColumn.setCellFactory(TextFieldTableCell.forTableColumn());
     }
 
     @FXML

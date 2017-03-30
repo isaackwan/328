@@ -37,7 +37,10 @@ public class Peer {
                 Song songInDb;
                 while ((line = database.readLine()) != null) {
                     config = line.split(",,");
-                    song = new RemoteSong(uri.get()+"/"+config[0], config[0], config[2], config[3], config[4], Integer.parseInt(config[1]));
+                    if (config.length != 5) {
+                        continue;
+                    }
+                    song = new RemoteSong(uri.get()+"/"+config[0], config[0], config[2], config[3], config[4], (long) Integer.parseInt(config[1]));
                     try {
                         songInDb = songRepo.getSong(song);
                         if (songInDb instanceof RemoteSong) {
@@ -56,5 +59,17 @@ public class Peer {
             }
         }).exceptionally(ex -> {Logger.getGlobal().log(Level.SEVERE, "Exception during database synchronization", ex);return null;});
         return mergeWithDb;
+    }
+
+    public String getUri() {
+        return uri.get();
+    }
+
+    public StringProperty uriProperty() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri.set(uri);
     }
 }
