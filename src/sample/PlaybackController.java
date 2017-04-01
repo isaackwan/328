@@ -37,6 +37,7 @@ public class PlaybackController {
         singer.textProperty().bind(main.player.singer);
         album.textProperty().bind(main.player.album);
         lyricsLabel.textProperty().bind(main.player.lyrics);
+        lyricsLabel.visibleProperty().bind(main.player.active);
         pauseBtn.visibleProperty().bind(main.player.shouldStop.not().and(main.player.active));
         unpauseBtn.visibleProperty().bind(main.player.shouldStop.and(main.player.active));
         stopBtn.visibleProperty().bind(main.player.active);

@@ -4,6 +4,8 @@ import javafx.beans.property.StringProperty;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by isaac on 3/29/17.
@@ -43,4 +45,5 @@ public abstract class Song {
     abstract public AudioFormat getFormat() throws Exception;
     abstract public void close() throws IOException;
     abstract public void start();
+    abstract public CompletableFuture<InputStream> lyrics() throws IOException;
 }

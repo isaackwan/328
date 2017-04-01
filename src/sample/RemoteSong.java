@@ -1,7 +1,9 @@
 package sample;
 
 import javafx.beans.property.SimpleStringProperty;
-import org.asynchttpclient.*;
+import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.Request;
+import org.asynchttpclient.RequestBuilder;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.EOFException;
@@ -12,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,8 +24,6 @@ import java.util.logging.Logger;
  * Created by isaac on 3/29/17.
  */
 public class RemoteSong extends Song {
-    private final static int BYTES_PER_PIECE = 300*1024;
-    private AsyncHttpClient httpClient = new DefaultAsyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setMaxConnections(100).build());
     private List<String> uris = new LinkedList<String>();
     private int totalPieces;
     private BlockingQueue<byte[]> payload = new LinkedBlockingQueue();
@@ -154,5 +155,13 @@ public class RemoteSong extends Song {
             sb.append(", ");
         }
         return sb.toString();
+    }
+
+    public CompletableFuture<InputStream> lyrics() {
+        return new DefaultAsyncHttpClient()
+                .prepareGet(uris.get(0)+".lrc")
+                .execute()
+                .toCompletableFuture()
+                .thenApply(res -> res.getResponseBodyAsStream());
     }
 }

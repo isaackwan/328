@@ -11,6 +11,7 @@ import javafx.beans.property.StringProperty;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.SourceDataLine;
 import java.io.EOFException;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,7 @@ public class Player {
     public final StringProperty singer = new SimpleStringProperty("");
     public final StringProperty album = new SimpleStringProperty("");
     public final StringProperty lyrics = new SimpleStringProperty("");
+    private final LyricsDisplay lyricsDisplay = new LyricsDisplay(lyrics);
 
     public void play(Song song) throws Exception {
         if (line != null && line.isRunning()) {
@@ -39,6 +41,7 @@ public class Player {
         singer.bind(song.singerProperty());
         album.bind(song.albumProperty());
         active.set(true);
+        final CompletableFuture<Void> loadLyrics = song.lyrics().thenAccept(stream -> lyricsDisplay.loadAndStop(stream));
 
         synchronized (shouldStop) {
             shouldStop.set(false);
@@ -51,6 +54,11 @@ public class Player {
             @Override
             public void run() {
                 byte[] buf = null;
+                loadLyrics.join();
+                loadLyrics.thenAcceptAsync((Void v) -> lyricsDisplay.start()).exceptionally(ex -> {
+                    Logger.getLogger("Player").log(Level.WARNING, "Failed to load lyrics", ex);
+                            return null;
+                });
                 while(true) {
                     synchronized (shouldStop) {
                         while(shouldStop.get()) {

@@ -20,13 +20,14 @@ public class AsyncPieceDownloader {
     private final BlockingQueue<byte[]> buffer;
     private final long size;
     private int batchId = 0;
+    private long totalPieces;
     public AsyncPieceDownloader(List<String> uris, BlockingQueue<byte[]> buffer, long size) {
         this.uris = uris;
         this.buffer = buffer;
         this.size = size;
+        this.totalPieces = size/BYTES_PER_PIECE + ((size % BYTES_PER_PIECE == 0) ? 0 : 1); // Round up
     }
     public CompletableFuture<Void> download() {
-        final long totalPieces = size/BYTES_PER_PIECE + ((size % BYTES_PER_PIECE == 0) ? 0 : 1);
         CompletableFuture<Void> promiseToDownloadEverything = CompletableFuture.completedFuture(null);
         for (int i = 0; i < totalPieces; i++) {
             promiseToDownloadEverything = promiseToDownloadEverything.
@@ -37,7 +38,7 @@ public class AsyncPieceDownloader {
 
     private void downloadNextBatch(Void v) {
         ArrayList<CompletableFuture<byte[]>> promisesOfAllServers = new ArrayList<CompletableFuture<byte[]>>();
-        for (int serverId = 0; serverId < uris.size(); serverId++) {
+        for (int serverId = 0; serverId < uris.size() && batchId*uris.size()+serverId < totalPieces; serverId++) {
             promisesOfAllServers.add(downloadPieceFromServer(serverId));
         }
         Iterator<CompletableFuture<byte[]>> iterator = promisesOfAllServers.iterator();

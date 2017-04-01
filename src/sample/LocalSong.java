@@ -6,10 +6,9 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
 /**
  * Created by isaac on 3/29/17.
@@ -87,6 +86,17 @@ public class LocalSong extends Song implements AutoCloseable {
 
     public String getLocation() {
         return "Local";
+    }
+
+    public CompletableFuture<InputStream> lyrics() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return new FileInputStream(path + ".lrc");
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger("LocalSong").info("returning null as lyrics due to 404 (on disk).");
+                return null;
+            }
+        });
     }
 
     private AudioFormat javaParsedFormat() throws IOException, UnsupportedAudioFileException {
