@@ -2,6 +2,7 @@ package sample; /**
  * Created by isaac on 3/28/17.
  */
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,6 +23,7 @@ public class Player {
     public final StringProperty filename = new SimpleStringProperty("");
     public final StringProperty singer = new SimpleStringProperty("");
     public final StringProperty album = new SimpleStringProperty("");
+    public final StringProperty lyrics = new SimpleStringProperty("");
 
     public void play(Song song) throws Exception {
         if (line != null && line.isRunning()) {
@@ -62,6 +64,9 @@ public class Player {
                     try {
                         buf = song.read();
                         line.write(buf, 0, buf.length);
+                    } catch (IllegalArgumentException e) {
+                        final String dataToBeWrittenInHex = new String(buf);
+                        Logger.getLogger("Player").log(Level.WARNING, "Invalid data supplied. The data: "+dataToBeWrittenInHex, e);
                     } catch (EOFException e) {
                         Logger.getLogger("Player").info("EOF reached in Player");
                         break;
@@ -112,13 +117,18 @@ public class Player {
     }
 
     private void resetLabels() {
-        name.unbind();
-        name.set("");
-        filename.unbind();
-        filename.set("");
-        singer.unbind();
-        singer.set("");
-        album.unbind();
-        album.set("");
+        Platform.runLater(new Runnable(){ // working around bug: http://stackoverflow.com/a/32489845/1348400
+            @Override
+            public void run() {
+                name.unbind();
+                name.set("");
+                filename.unbind();
+                filename.set("");
+                singer.unbind();
+                singer.set("");
+                album.unbind();
+                album.set("");
+            }
+        });
     }
 }

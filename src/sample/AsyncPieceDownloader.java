@@ -40,7 +40,6 @@ public class AsyncPieceDownloader {
         for (int serverId = 0; serverId < uris.size(); serverId++) {
             promisesOfAllServers.add(downloadPieceFromServer(serverId));
         }
-        blockTillAllPromisesComplete(promisesOfAllServers);
         Iterator<CompletableFuture<byte[]>> iterator = promisesOfAllServers.iterator();
         while (iterator.hasNext()) {
             iterator.next()
@@ -51,17 +50,30 @@ public class AsyncPieceDownloader {
                     })
                     .join();
         }
+        batchId++;
     }
 
     private CompletableFuture<byte[]> downloadPieceFromServer(int server) {
         String uri = uris.get(server);
-        long rangeLower = 44+BYTES_PER_PIECE*(batchId++*uris.size() + server);
+        long rangeLower = 44+BYTES_PER_PIECE*(batchId*uris.size() + server);
         long rangeUpper = rangeLower+BYTES_PER_PIECE-1;
+        if (rangeLower > size) {
+            throw new IllegalStateException("The byte ranges to be requested exceeds the file size.");
+        }
         Request req = new RequestBuilder()
                 .setUrl(uri)
                 .setHeader("Range", "bytes="+rangeLower+"-"+rangeUpper)
                 .build();
-        final CompletableFuture<byte[]> promise = httpClient.executeRequest(req).toCompletableFuture().thenApply(resp -> resp.getResponseBodyAsBytes());
+        final CompletableFuture<byte[]> promise = httpClient
+                                                    .executeRequest(req)
+                                                    .toCompletableFuture()
+                                                    .thenApply(resp -> {
+                                                        if (resp.getStatusCode() >= 300) {
+                                                            throw new RuntimeException("the HTTP response indicates an error for request: "+req);
+                                                        }
+                                                        return resp;
+                                                    })
+                                                    .thenApply(resp -> resp.getResponseBodyAsBytes());
         return promise;
     }
 
@@ -69,10 +81,4 @@ public class AsyncPieceDownloader {
         buffer.add(data);
     }
 
-    private static void blockTillAllPromisesComplete(List<CompletableFuture<byte[]>> list) {
-        Iterator<CompletableFuture<byte[]>> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            iterator.next().join();
-        }
-    }
 }

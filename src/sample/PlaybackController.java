@@ -18,6 +18,8 @@ public class PlaybackController {
     @FXML
     private Label album;
     @FXML
+    private Label lyricsLabel;
+    @FXML
     private Button pauseBtn;
     @FXML
     private Button unpauseBtn;
@@ -34,6 +36,7 @@ public class PlaybackController {
         name.textProperty().bind(main.player.name);
         singer.textProperty().bind(main.player.singer);
         album.textProperty().bind(main.player.album);
+        lyricsLabel.textProperty().bind(main.player.lyrics);
         pauseBtn.visibleProperty().bind(main.player.shouldStop.not().and(main.player.active));
         unpauseBtn.visibleProperty().bind(main.player.shouldStop.and(main.player.active));
         stopBtn.visibleProperty().bind(main.player.active);
