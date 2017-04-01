@@ -52,6 +52,7 @@ public class Player {
                     synchronized (shouldStop) {
                         while(shouldStop.get()) {
                             try {
+                                Logger.getLogger("Player").info("Pausing playback");
                                 shouldStop.wait();
                                 Logger.getLogger("Player").info("Resuming playback");
                             } catch (InterruptedException e) {Logger.getLogger("Player").warning("while waiting for write signal, the thread got interrupted");}
@@ -67,11 +68,11 @@ public class Player {
                         Logger.getLogger("Player").log(Level.SEVERE, "Unknown exception thrown", e);
                     }
                 }
-                line.drain();
-                Logger.getLogger("Player ended, cleaning up...");
+                /*line.drain();
+                Logger.getLogger("Player").info("Player ended, cleaning up...");
                 line.close();
                 line = null;
-                active.set(false);
+                active.set(false);*/
                 resetLabels();
                 // finished playing
                 //line = null;

@@ -4,27 +4,31 @@ import javafx.beans.property.SimpleStringProperty;
 import org.asynchttpclient.*;
 
 import javax.sound.sampled.AudioFormat;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
  * Created by isaac on 3/29/17.
  */
 public class RemoteSong extends Song {
-    private final static int BYTES_PER_PIECE = 1024*300;
+    private final static int BYTES_PER_PIECE = 240*1024;
     private AsyncHttpClient httpClient = new DefaultAsyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setMaxConnections(100).build());
     private List<String> uri = new LinkedList<String>();
     private int totalPieces;
-    private AtomicBoolean downloaded = new AtomicBoolean();
     private BlockingQueue<byte[]> payload = new LinkedBlockingQueue();
     private long filesize;
+    private boolean payloadEof = false;
 
     public RemoteSong(String uri, String filename, String name, String singer, String album, long filesize) throws Exception {
         super.filename = filename;
@@ -38,7 +42,15 @@ public class RemoteSong extends Song {
 
     @Override
     public byte[] read() throws IOException, InterruptedException {
-        return payload.take();
+        if (!payloadEof) {
+            return payload.take();
+        } else {
+            try {
+                return payload.remove();
+            } catch (NoSuchElementException ex) {
+                throw new EOFException();
+            }
+        }
     }
 
     @Override
@@ -57,19 +69,20 @@ public class RemoteSong extends Song {
             throw new Exception("The implementation of this program assumes that fmt is placed before data.");
         }
         result.skip(3);
-        int fmtChunkSize = readLittleEndian(result, 4);
+        final int fmtChunkSize = readLittleEndian(result, 4);
         result.skip(2);
         int channels = readLittleEndian(result, 2);
-        int sampleRate = readLittleEndian(result, 4);
-        int byteRate = readLittleEndian(result, 4);
-        int blockAlign = readLittleEndian(result, 2);
-        int bitsPerSample = readLittleEndian(result, 2);
+        final int sampleRate = readLittleEndian(result, 4);
+        final int byteRate = readLittleEndian(result, 4);
+        final int blockAlign = readLittleEndian(result, 2);
+        final int bitsPerSample = readLittleEndian(result, 2);
+        final int frameSize = bitsPerSample / 8 * 2;
         if (result.read() != 'd') {
             throw new Exception("apparently we are not reading the 'data' chunk.");
         }
         result.skip(7);
         downloadInBackground();
-        return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, bitsPerSample, channels, 4, byteRate/4, false);
+        return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, bitsPerSample, channels, frameSize, byteRate/frameSize, false);
     }
 
     @Override
@@ -78,9 +91,8 @@ public class RemoteSong extends Song {
     }
 
     private void downloadInBackground() {
-        if (downloaded.compareAndSet(false, true) == true) {
-            return;
-        }
+        payload.clear();
+        payloadEof = false;
         new Thread()
         {
             public void run() {
@@ -95,11 +107,16 @@ public class RemoteSong extends Song {
                             .setUrl(uri.get(targetServer))
                             .setHeader("Range", "bytes="+rangeLower+"-"+rangeUpper)
                             .build();
-                    httpClient.executeRequest(req).toCompletableFuture().thenAccept(resp -> {
+                    final CompletableFuture<Void> promise = httpClient.executeRequest(req).toCompletableFuture().thenAccept(resp -> {
                         byte[] buf = resp.getResponseBodyAsBytes();
                         payload.add(buf);
-                    }).join(); // we're using sync method for now...
+                    }).exceptionally(ex -> {
+                        Logger.getLogger("RemoteSong").log(Level.WARNING, "failed to download remote song", ex);
+                        return null;
+                    });
+                    promise.join(); // we're using sync method for now...
                 }
+                payloadEof = true;
             }
         }.start();
     }

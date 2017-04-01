@@ -3,7 +3,11 @@ package sample;
 import javafx.beans.property.SimpleStringProperty;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -53,18 +57,19 @@ public class LocalSong extends Song implements AutoCloseable {
             throw new Exception("The implementation of this program assumes that fmt is placed before data.");
         }
         file.skipBytes(3);
-        int fmtChunkSize = file.readLittleEndian(4);
+        final int fmtChunkSize = file.readLittleEndian(4);
         file.skipBytes(2);
-        int channels = file.readLittleEndian(2);
-        int sampleRate = file.readLittleEndian(4);
-        int byteRate = file.readLittleEndian(4);
-        int blockAlign = file.readLittleEndian(2);
-        int bitsPerSample = file.readLittleEndian(2);
+        final int channels = file.readLittleEndian(2);
+        final int sampleRate = file.readLittleEndian(4);
+        final int byteRate = file.readLittleEndian(4);
+        final int blockAlign = file.readLittleEndian(2);
+        final int bitsPerSample = file.readLittleEndian(2);
+        final int frameSize = bitsPerSample / 8 * 2;
         if (file.read() != 'd') {
             throw new Exception("apparently we are not reading the 'data' chunk.");
         }
-        file.seek(20+fmtChunkSize);
-        return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, bitsPerSample, channels, 4, byteRate/4, false);
+        file.skipBytes(7);
+        return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, bitsPerSample, channels, frameSize, byteRate/frameSize, false);
     }
 
     public String serialize() throws IOException {
@@ -79,5 +84,10 @@ public class LocalSong extends Song implements AutoCloseable {
 
     public String getLocation() {
         return "Local";
+    }
+
+    private AudioFormat javaParsedFormat() throws IOException, UnsupportedAudioFileException {
+        final AudioInputStream audio = AudioSystem.getAudioInputStream(new File(path));
+        return audio.getFormat();
     }
 }
