@@ -38,6 +38,7 @@ public class Peer {
                 while ((line = database.readLine()) != null) {
                     config = line.split(",,");
                     if (config.length != 5) {
+                        Logger.getLogger("Peer").warning("Skipping the following song because of mal-formatting: "+line);
                         continue;
                     }
                     song = new RemoteSong(uri.get()+"/"+config[0], config[0], config[2], config[3], config[4], Long.parseLong(config[1]));
