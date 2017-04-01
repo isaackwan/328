@@ -40,6 +40,9 @@ public class LocalSong extends Song implements AutoCloseable {
         return buffer;
     }
 
+    public void start() {
+
+    }
 
     @Override
     public void close() throws IOException {

@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,9 +21,9 @@ import java.util.logging.Logger;
  * Created by isaac on 3/29/17.
  */
 public class RemoteSong extends Song {
-    private final static int BYTES_PER_PIECE = 240*1024;
+    private final static int BYTES_PER_PIECE = 300*1024;
     private AsyncHttpClient httpClient = new DefaultAsyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setMaxConnections(100).build());
-    private List<String> uri = new LinkedList<String>();
+    private List<String> uris = new LinkedList<String>();
     private int totalPieces;
     private BlockingQueue<byte[]> payload = new LinkedBlockingQueue();
     private long filesize;
@@ -36,7 +35,7 @@ public class RemoteSong extends Song {
         super.singer = new SimpleStringProperty(singer);
         super.album = new SimpleStringProperty(album);
         this.filesize = filesize;
-        this.uri.add(uri);
+        this.uris.add(uri);
         totalPieces = 1000;
     }
 
@@ -55,7 +54,7 @@ public class RemoteSong extends Song {
 
     @Override
     public AudioFormat getFormat() throws Exception {
-        String firstUri = this.uri.get(0);
+        String firstUri = this.uris.get(0);
         Request req = new RequestBuilder()
                 .setUrl(firstUri)
                 .setHeader("Range", "bytes=0-43")
@@ -81,7 +80,6 @@ public class RemoteSong extends Song {
             throw new Exception("apparently we are not reading the 'data' chunk.");
         }
         result.skip(7);
-        downloadInBackground();
         return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, bitsPerSample, channels, frameSize, byteRate/frameSize, false);
     }
 
@@ -90,21 +88,28 @@ public class RemoteSong extends Song {
 
     }
 
-    private void downloadInBackground() {
+    public void start() {
         payload.clear();
         payloadEof = false;
-        new Thread()
+        AsyncPieceDownloader downloader = new AsyncPieceDownloader(uris, payload, filesize);
+        downloader.download().thenAccept((Void v) -> {
+            payloadEof = true;
+        }).exceptionally(ex -> {
+            Logger.getLogger("RemoteSong").log(Level.SEVERE, "Failed to download in 2nd larger promise", ex);
+            return null;
+        });
+        /*new Thread()
         {
             public void run() {
                 Request req;
                 int targetServer = 0;
                 int rangeLower, rangeUpper;
                 for (int i = 0; i < totalPieces; i++) {
-                    targetServer = (targetServer++) % uri.size();
+                    targetServer = (targetServer++) % uris.size();
                     rangeLower = 44+BYTES_PER_PIECE*i;
                     rangeUpper = rangeLower+BYTES_PER_PIECE-1;
                     req = new RequestBuilder()
-                            .setUrl(uri.get(targetServer))
+                            .setUrl(uris.get(targetServer))
                             .setHeader("Range", "bytes="+rangeLower+"-"+rangeUpper)
                             .build();
                     final CompletableFuture<Void> promise = httpClient.executeRequest(req).toCompletableFuture().thenAccept(resp -> {
@@ -118,14 +123,14 @@ public class RemoteSong extends Song {
                 }
                 payloadEof = true;
             }
-        }.start();
+        }.start();*/
     }
 
 
 
     public void addUri(String uri) {
         synchronized (uri) {
-            this.uri.add(uri);
+            this.uris.add(uri);
         }
     }
 
@@ -144,7 +149,7 @@ public class RemoteSong extends Song {
 
     public String getLocation() {
         StringBuilder sb = new StringBuilder();
-        for (Iterator<String> iterator = uri.iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = uris.iterator(); iterator.hasNext();) {
             sb.append(iterator.next());
             sb.append(", ");
         }

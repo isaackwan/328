@@ -41,6 +41,7 @@ public class Player {
         synchronized (shouldStop) {
             shouldStop.set(false);
         }
+        song.start();
         line = AudioSystem.getSourceDataLine(song.getFormat());
         line.open(song.getFormat());
         line.start();
@@ -68,14 +69,12 @@ public class Player {
                         Logger.getLogger("Player").log(Level.SEVERE, "Unknown exception thrown", e);
                     }
                 }
-                /*line.drain();
+                line.drain();
                 Logger.getLogger("Player").info("Player ended, cleaning up...");
                 line.close();
                 line = null;
-                active.set(false);*/
+                active.set(false);
                 resetLabels();
-                // finished playing
-                //line = null;
             }
         });
         playbackThread.start();

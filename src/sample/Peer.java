@@ -40,7 +40,7 @@ public class Peer {
                     if (config.length != 5) {
                         continue;
                     }
-                    song = new RemoteSong(uri.get()+"/"+config[0], config[0], config[2], config[3], config[4], (long) Integer.parseInt(config[1]));
+                    song = new RemoteSong(uri.get()+"/"+config[0], config[0], config[2], config[3], config[4], Long.parseLong(config[1]));
                     try {
                         songInDb = songRepo.getSong(song);
                         if (songInDb instanceof RemoteSong) {

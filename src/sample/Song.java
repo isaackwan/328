@@ -42,5 +42,5 @@ public abstract class Song {
     abstract public byte[] read() throws IOException, InterruptedException;
     abstract public AudioFormat getFormat() throws Exception;
     abstract public void close() throws IOException;
-
+    abstract public void start();
 }
