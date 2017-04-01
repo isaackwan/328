@@ -18,6 +18,9 @@ public class FileServer implements AutoCloseable {
         server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
         Logger.getLogger("FileServer").info("Web server started successfully on port "+port);
     }
+    public FileServer(String port) throws IOException {
+        this(Integer.parseInt(port));
+    }
     public void close() {
         server.stop();
         Logger.getLogger("FileServer").info("Web server stopped.");

@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class Main extends Application {
@@ -17,7 +18,7 @@ public class Main extends Application {
     public PeerRepo peerRepo = new PeerRepo(songRepo);
     private Stage primaryStage;
     public Player player = new Player();
-    private FileServer fileServer = new FileServer(9001);
+    private FileServer fileServer = new FileServer(Optional.ofNullable(System.getenv("CSCI3280_PORT")).orElse("9001"));
 
     /**
      * constructor for the Main class which is created by the JavaFX runtime automatically.
