@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+/**
+ * an extension of the original RandomAccessFile to add readLittleEndian() method
+ */
 public class RandomAccessFile2 extends RandomAccessFile {
     RandomAccessFile2(String name, String mode) throws FileNotFoundException {
         super(name, mode);

@@ -21,12 +21,24 @@ public class AsyncPieceDownloader {
     private final long size;
     private int batchId = 0;
     private long totalPieces;
+
+    /**
+     * creates a download job. the abstract downloader cannot be reused.
+     * @param uris an List of uris to download from
+     * @param buffer a reference to the buffer to hold the payload (supplied by caller)
+     * @param size size of the file in bytes
+     */
     public AsyncPieceDownloader(List<String> uris, BlockingQueue<byte[]> buffer, long size) {
         this.uris = uris;
         this.buffer = buffer;
         this.size = size;
         this.totalPieces = size/BYTES_PER_PIECE + ((size % BYTES_PER_PIECE == 0) ? 0 : 1); // Round up
     }
+
+    /**
+     * actually starts the download
+     * @return a promise that resolves when the download is completed
+     */
     public CompletableFuture<Void> download() {
         CompletableFuture<Void> promiseToDownloadEverything = CompletableFuture.completedFuture(null);
         for (int i = 0; i < totalPieces; i++) {
@@ -36,6 +48,9 @@ public class AsyncPieceDownloader {
         return promiseToDownloadEverything;
     }
 
+    /**
+     * download the next batch (i.e. from different servers) of data
+     */
     private void downloadNextBatch(Void v) {
         ArrayList<CompletableFuture<byte[]>> promisesOfAllServers = new ArrayList<CompletableFuture<byte[]>>();
         for (int serverId = 0; serverId < uris.size() && batchId*uris.size()+serverId < totalPieces; serverId++) {
@@ -54,6 +69,11 @@ public class AsyncPieceDownloader {
         batchId++;
     }
 
+    /**
+     * download the data from a specified server, usually in a batch.
+     * @param server the 0-indexed serverID
+     * @return a promise holding the download data
+     */
     private CompletableFuture<byte[]> downloadPieceFromServer(int server) {
         String uri = uris.get(server);
         long rangeLower = 44+BYTES_PER_PIECE*(batchId*uris.size() + server);

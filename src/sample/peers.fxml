@@ -26,7 +26,7 @@
       </TableView>
       <AnchorPane prefHeight="50.0" prefWidth="200.0" GridPane.rowIndex="2">
          <children>
-            <Button layoutX="712.0" layoutY="11.0" mnemonicParsing="false" onAction="#addPeer" text="Add" />
+            <Button layoutX="737.0" layoutY="12.0" mnemonicParsing="false" onAction="#addPeer" text="Add" />
             <TextField fx:id="peerUri" layoutX="121.0" layoutY="11.0" />
             <Label layoutX="14.0" layoutY="16.0" text="URI:" />
          </children>
@@ -38,6 +38,7 @@
               <MenuItem mnemonicParsing="false" onAction="#switchToDatabaseView" text="Database" />
                   <MenuItem mnemonicParsing="false" onAction="#switchToPlaybackView" text="Playback" />
                   <MenuItem mnemonicParsing="false" text="Peers" />
+                  <MenuItem mnemonicParsing="false" onAction="#resetDb" text="Reset" />
             </items>
           </Menu>
         </menus>

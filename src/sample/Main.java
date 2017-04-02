@@ -93,4 +93,13 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.sizeToScene();
     }
+
+    /**
+     * resets both the song & peers databases. Does not reseed from database.
+     */
+    void resetDb() {
+        songRepo.clear();
+        peerRepo.clear();
+        Logger.getLogger("Main").info("Finished resetting both databases.");
+    }
 }

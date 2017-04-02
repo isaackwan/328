@@ -29,6 +29,7 @@
               <MenuItem mnemonicParsing="false" onAction="#switchToDatabaseView" text="Database" />
                 <MenuItem mnemonicParsing="false" text="Playback" />
                 <MenuItem mnemonicParsing="false" onAction="#switchToPeersView" text="Peers" />
+                <MenuItem mnemonicParsing="false" onAction="#resetDb" text="Reset" />
             </items>
           </Menu>
         </menus>

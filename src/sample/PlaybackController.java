@@ -72,4 +72,10 @@ public class PlaybackController {
     private void stop(ActionEvent event) throws IOException {
         main.player.stop();
     }
+
+    @FXML
+    private void resetDb(ActionEvent event) throws IOException {
+        stop(event);
+        main.resetDb();
+    }
 }

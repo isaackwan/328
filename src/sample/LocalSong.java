@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 /**
- * Created by isaac on 3/29/17.
+ * A local song.
  */
 public class LocalSong extends Song implements AutoCloseable {
     private String path;
@@ -48,15 +48,19 @@ public class LocalSong extends Song implements AutoCloseable {
         file.close();
     }
 
+    /**
+     * @return the AudioFormat parsed
+     * @throws IOException
+     */
     @Override
-    public AudioFormat getFormat() throws Exception {
+    public AudioFormat getFormat() throws IOException {
         file.seek(0);
         if (file.read() != 'R') {
-            throw new Exception("The target file is not a RIFF file.");
+            throw new RuntimeException("The target file is not a RIFF file.");
         }
         file.skipBytes(11);
         if (file.read() != 'f') {
-            throw new Exception("The implementation of this program assumes that fmt is placed before data.");
+            throw new RuntimeException("The implementation of this program assumes that fmt is placed before data.");
         }
         file.skipBytes(3);
         final int fmtChunkSize = file.readLittleEndian(4);
@@ -68,7 +72,7 @@ public class LocalSong extends Song implements AutoCloseable {
         final int bitsPerSample = file.readLittleEndian(2);
         final int frameSize = bitsPerSample / 8 * 2;
         if (file.read() != 'd') {
-            throw new Exception("apparently we are not reading the 'data' chunk.");
+            throw new RuntimeException("apparently we are not reading the 'data' chunk.");
         }
         file.skipBytes(7);
         return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, bitsPerSample, channels, frameSize, byteRate/frameSize, false);
@@ -88,6 +92,9 @@ public class LocalSong extends Song implements AutoCloseable {
         return "Local";
     }
 
+    /**
+     * @return a promise holding the lyrics text stream
+     */
     public CompletableFuture<InputStream> lyrics() {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -99,6 +106,11 @@ public class LocalSong extends Song implements AutoCloseable {
         });
     }
 
+    /**
+     * @return the AudioFormat parsed by Java
+     * @throws IOException when the file cannot be opened
+     * @throws UnsupportedAudioFileException
+     */
     private AudioFormat javaParsedFormat() throws IOException, UnsupportedAudioFileException {
         final AudioInputStream audio = AudioSystem.getAudioInputStream(new File(path));
         return audio.getFormat();

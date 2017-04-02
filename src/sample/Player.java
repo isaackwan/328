@@ -27,6 +27,9 @@ public class Player {
     public final StringProperty lyrics = new SimpleStringProperty("");
     private final LyricsDisplay lyricsDisplay = new LyricsDisplay(lyrics);
 
+    /**
+     * loads and immediately starts playing stuff
+     */
     public void play(Song song) throws Exception {
         if (line != null && line.isRunning()) {
             Logger.getLogger("Player").log(Level.WARNING, "The player is already playing stuff.");
@@ -124,6 +127,9 @@ public class Player {
         active.set(false);
     }
 
+    /**
+     * reset StringProperties
+     */
     private void resetLabels() {
         Platform.runLater(new Runnable(){ // working around bug: http://stackoverflow.com/a/32489845/1348400
             @Override

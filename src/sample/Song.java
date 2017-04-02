@@ -18,7 +18,6 @@ public abstract class Song {
 
     @Override
     public int hashCode() {return filename.hashCode();}
-
     public boolean equals(Song song2) {
         return this.filename.equals(song2.filename);
     }
@@ -42,8 +41,38 @@ public abstract class Song {
         return "Song: " + this.name.get();
     }
     abstract public byte[] read() throws IOException, InterruptedException;
+
+    /**
+     * @return a reference to a buffer for the next chunk
+     * @throws Exception
+     */
     abstract public AudioFormat getFormat() throws Exception;
+
+    /**
+     * close the file/Internet handle for downloading the file
+     * @throws IOException
+     */
     abstract public void close() throws IOException;
+
+    /**
+     * starts the pre-loading of the song
+     */
     abstract public void start();
     abstract public CompletableFuture<InputStream> lyrics() throws IOException;
+
+    /**
+     * determines if, given an array of keywords, the file fits the given criteria
+     * @param keywords
+     * @return whether the file fits the given criteria
+     */
+    public boolean matches(String[] keywords) {
+        for (String keyword : keywords) {
+            final boolean foundInName = getName().contains(keyword);
+            final boolean foundInSinger = getSinger().contains(keyword);
+            if (!foundInSinger && !foundInName) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

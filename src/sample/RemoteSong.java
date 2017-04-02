@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 
 /**
- * Created by isaac on 3/29/17.
+ * A song provided by remote computer.
  */
 public class RemoteSong extends Song {
     private List<String> uris = new LinkedList<String>();

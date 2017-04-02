@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -29,10 +30,13 @@ public class DatabaseController {
     private TableColumn<Song, String> locationColumn;
     @FXML
     private TextField newSongFilename;
+    @FXML
+    private FilteredList<Song> filteredRepo = null;
 
     public void setMain(Main main) {
         this.main = main;
-        songTable.setItems(main.songRepo);
+        //songTable.setItems(main.songRepo);
+        songTable.setItems(filteredRepo = new FilteredList<Song>(main.songRepo, p -> true));
     }
 
     @FXML
@@ -77,6 +81,17 @@ public class DatabaseController {
         filenameColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("filename"));
         filesizeColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("filesize"));
         locationColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("location"));
+        newSongFilename.textProperty().addListener(((observable, oldValue, newValue) -> {
+            if (filteredRepo == null) {
+                return;
+            }
+            filteredRepo.setPredicate(song -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                return song.matches(newValue.split(" "));
+            });
+        }));
     }
 
     @FXML
@@ -148,6 +163,11 @@ public class DatabaseController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText("Saved!");
         alert.showAndWait();
+    }
+
+    @FXML
+    private void resetDb(ActionEvent event) {
+        main.resetDb();
     }
 
 }

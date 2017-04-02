@@ -7,9 +7,6 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-/**
- * Created by isaac on 3/29/17.
- */
 public class SongRepo extends SimpleListProperty<Song> {
     private final String databasePrefix = "database";
     SongRepo(){
@@ -49,6 +46,10 @@ public class SongRepo extends SimpleListProperty<Song> {
         throw new IndexOutOfBoundsException();
     }
 
+    /**
+     * persist the in-memory database by storing the contents in a local file
+     * @throws IOException
+     */
     public void persistDatabase() throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter("database/database.txt", false));
         Iterator<Song> iterator = iterator();

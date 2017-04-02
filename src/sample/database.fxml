@@ -25,6 +25,7 @@
               <MenuItem mnemonicParsing="false" text="Database" />
                   <MenuItem mnemonicParsing="false" onAction="#switchToPlaybackView" text="Playback" />
                   <MenuItem mnemonicParsing="false" onAction="#switchToPeersView" text="Peers" />
+                  <MenuItem mnemonicParsing="false" onAction="#resetDb" text="Reset" />
             </items>
           </Menu>
         </menus>
@@ -51,7 +52,7 @@
                <items>
                   <Button layoutX="100.0" mnemonicParsing="false" onAction="#persistDatabase" text="Save" />
                   <Button layoutX="10.0" layoutY="12.0" mnemonicParsing="false" onAction="#addSong" text="Add" />
-                  <TextField fx:id="newSongFilename" prefHeight="25.0" prefWidth="258.0" />
+                  <TextField fx:id="newSongFilename" prefHeight="25.0" prefWidth="258.0" promptText="Search Here" />
                </items>
             </ToolBar>
         </items>

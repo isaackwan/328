@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by isaac on 4/1/17.
+ * An abstract Lyrics Displayer. Usually only one is needed for one player, for an infinite amount of songs.
  */
 public class LyricsDisplay {
     private BufferedReader text;
@@ -29,6 +29,11 @@ public class LyricsDisplay {
         this.output = output;
         output.setValue("");
     }
+
+    /**
+     * load the lyrics stream, and resets the state
+     * @param stream the lyrics file
+     */
     public void loadAndStop(InputStream stream) {
         timer.purge();
         output.setValue("");
@@ -39,6 +44,10 @@ public class LyricsDisplay {
             text = new BufferedReader(new InputStreamReader(stream));
         }
     }
+
+    /**
+     * starts displaying the lyrics
+     */
     public void start() {
         if (text == null) {
             Logger.getLogger("LyricsDisplay").info("Returning from Lyrics Display's start() function, because lyrics BufferReader is null.");
@@ -47,6 +56,10 @@ public class LyricsDisplay {
         startTime = Instant.now();
         scheduleNextTask();
     }
+
+    /**
+     * schedules the next task. Called in the first start() call and subsequent nextTask()s
+     */
     private void scheduleNextTask() {
         if (startTime == null) {
             throw new IllegalStateException("start time is not defined");
@@ -74,6 +87,11 @@ public class LyricsDisplay {
             Logger.getLogger("LyricsDisplay").log(Level.WARNING, "I/O Error while reading lyrics", ex);
         }
     }
+
+    /**
+     * @param lyrics Lyrics to be shown
+     * @return TimerTask to be added to the scheduler (timer)
+     */
     private TimerTask nextTask(String lyrics) {
         return new TimerTask(){
             public void run() {
@@ -87,6 +105,13 @@ public class LyricsDisplay {
             }
         };
     }
+
+    /**
+     * Calculates the Date when the lyrics is supposed to appear.
+     * @param origin the original "base" time
+     * @param offset how many ms after the lyrics is expected to show, calculated from {origin}
+     * @return the Date computed by adding two "Instants" together
+     */
     private final Date targetDate(Instant origin, long offset) {
         Instant target = origin.plusMillis(offset);
         return Date.from(target);

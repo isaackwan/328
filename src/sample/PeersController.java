@@ -51,4 +51,8 @@ public class PeersController {
         main.switchToDatabaseView();
     }
 
+    @FXML
+    private void resetDb(ActionEvent event) {
+        main.resetDb();
+    }
 }

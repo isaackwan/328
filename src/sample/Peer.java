@@ -21,6 +21,11 @@ public class Peer {
         this.uri = new SimpleStringProperty(uri);
     }
 
+    /**
+     * load remote computer's songs to the local in-memory database
+     * @param songRepo a reference to the program's local in-memory datavase
+     * @return a promise that resolves when the loading is completed
+     */
     public CompletableFuture<Void> syncRemoteDatabase(SongRepo songRepo) {
         AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
         CompletableFuture<BufferedReader> remote = asyncHttpClient
