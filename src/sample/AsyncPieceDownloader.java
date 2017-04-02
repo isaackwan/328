@@ -5,7 +5,7 @@ import org.asynchttpclient.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +17,7 @@ public class AsyncPieceDownloader {
     private final int BYTES_PER_PIECE = 1024*300;
     private final AsyncHttpClient httpClient = new DefaultAsyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setMaxConnections(100).build());
     private final List<String> uris;
-    private final BlockingQueue<byte[]> buffer;
+    private final Queue<byte[]> buffer;
     private final long size;
     private int batchId = 0;
     private long totalPieces;
@@ -28,7 +28,7 @@ public class AsyncPieceDownloader {
      * @param buffer a reference to the buffer to hold the payload (supplied by caller)
      * @param size size of the file in bytes
      */
-    public AsyncPieceDownloader(List<String> uris, BlockingQueue<byte[]> buffer, long size) {
+    public AsyncPieceDownloader(List<String> uris, Queue<byte[]> buffer, long size) {
         this.uris = uris;
         this.buffer = buffer;
         this.size = size;
