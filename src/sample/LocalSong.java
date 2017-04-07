@@ -7,6 +7,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
@@ -26,6 +27,12 @@ public class LocalSong extends Song implements AutoCloseable {
         this.path = path;
         file = new RandomAccessFile2(path, "r");
     }
+
+    @Override
+    public String getPath(){return path;}
+
+    @Override
+    public List<String> getUris(){return null;}
 
     public LocalSong(String filename) throws FileNotFoundException {
         this("database/"+filename, filename, filename, "N/A", "N/A");

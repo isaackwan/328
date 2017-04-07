@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import javafx.beans.property.SimpleStringProperty;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.Request;
@@ -29,6 +30,12 @@ public class RemoteSong extends Song {
     private BlockingQueue<byte[]> payload = new LinkedBlockingQueue();
     private long filesize;
     private boolean payloadEof = false;
+
+    @Override
+    public List<String> getUris(){return uris;}
+
+    @Override
+    public String getPath(){return null;}
 
     public RemoteSong(String uri, String filename, String name, String singer, String album, long filesize) throws Exception {
         super.filename = filename;

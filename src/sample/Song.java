@@ -5,6 +5,7 @@ import javafx.beans.property.StringProperty;
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -41,6 +42,8 @@ public abstract class Song {
         return "Song: " + this.name.get();
     }
     abstract public byte[] read() throws IOException, InterruptedException;
+    abstract public String getPath();
+    abstract public List<String> getUris();
 
     /**
      * @return a reference to a buffer for the next chunk
@@ -74,5 +77,17 @@ public abstract class Song {
             }
         }
         return true;
+    }
+
+    public static String getExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int dotPosition = filename.lastIndexOf(".");
+        String extension = "";
+        if (dotPosition != -1) {
+            extension = filename.substring(dotPosition);
+        }
+        return extension;
     }
 }
