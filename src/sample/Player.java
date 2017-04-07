@@ -93,6 +93,11 @@ public class Player {
                 resetLabels();
             }
         });
+        try {
+            playbackThread.setDaemon(true);
+        } catch (Exception ex) {
+            Logger.getLogger("Player").log(Level.WARNING, "Failed to set playback thread as daemon.", ex);
+        }
         playbackThread.start();
     }
 
@@ -103,12 +108,14 @@ public class Player {
         if (line != null) {
             line.stop();
         }
+        lyricsDisplay.pause();
     }
 
     public void unpause() {
         if (line != null) {
             line.start();
         }
+        lyricsDisplay.unpause();
         synchronized (shouldStop) {
             shouldStop.set(false);
             shouldStop.notifyAll();
