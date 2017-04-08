@@ -1,6 +1,5 @@
 package sample;
 
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import javafx.beans.property.SimpleStringProperty;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.Request;

@@ -11,17 +11,12 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
 import javax.sound.sampled.SourceDataLine;
 import java.io.EOFException;
+import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.File;
-import java.net.URI;
-
-
 
 public class Player {
     private SourceDataLine line;
@@ -34,33 +29,31 @@ public class Player {
     public final StringProperty album = new SimpleStringProperty("");
     public final StringProperty lyrics = new SimpleStringProperty("");
     private final LyricsDisplay lyricsDisplay = new LyricsDisplay(lyrics);
-    private Song songPlaying=null;
+    private Song songPlaying = null;
     private MediaPlayer mediaPlayer;
 
     /**
      * loads and immediately starts playing stuff
      */
     public void play(Song song) throws Exception {
-        String songExtension = song.getExtension(song.getFilename());
-        Logger.getLogger("Player").info("Song Extension:"+songExtension);
+        String songExtension = song.getExtension();
+        Logger.getLogger("Player").info("Song Extension: "+songExtension);
         songPlaying = song;
-        if(songExtension.equals(".wav") ) {
-
-            if (line != null && line.isRunning()) {
-                Logger.getLogger("Player").log(Level.WARNING, "The player is already playing stuff.");
-                return;
-            } else if (line != null) {
-                line.flush();
-                line.close();
-                line = null;
-            }
-            name.bind(song.nameProperty());
-            filename.setValue(song.filename);
-            singer.bind(song.singerProperty());
-            album.bind(song.albumProperty());
-            active.set(true);
-            final CompletableFuture<Void> loadLyrics = song.lyrics().thenAccept(stream -> lyricsDisplay.loadAndStop(stream));
-
+        if (active.get() || (line != null && line.isRunning())) {
+            Logger.getLogger("Player").log(Level.WARNING, "The player is already playing stuff.");
+            return;
+        } else if (line != null) {
+            line.flush();
+            line.close();
+            line = null;
+        }
+        name.bind(song.nameProperty());
+        filename.setValue(song.filename);
+        singer.bind(song.singerProperty());
+        album.bind(song.albumProperty());
+        active.set(true);
+        final CompletableFuture<Void> loadLyrics = song.lyrics().thenAccept(stream -> lyricsDisplay.loadAndStop(stream));
+        if (songExtension.equals(".wav") ) {
             synchronized (shouldStop) {
                 shouldStop.set(false);
             }
@@ -104,7 +97,7 @@ public class Player {
                         }
                     }
                     line.drain();
-                    Logger.getLogger("Player").info("Player ended, cleaning up...");
+                    Logger.getLogger("Player").info("WAV player ended, cleaning up...");
                     line.close();
                     line = null;
                     active.set(false);
@@ -113,63 +106,71 @@ public class Player {
             });
             playbackThread.start();
         }
-        if(songExtension.equals(".mp3") ) {
-           // Logger.getLogger("Player").info("Playing MP3...");
+        if (songExtension.equals(".mp3") ) {
             String bip = song.getPath();
             Media hit;
-            if(song.getLocation().equals("Local"))
-            {
-
+            if (song instanceof LocalSong) {
                  hit = new Media(new File(bip).toURI().toString());
-            }
-            else
-            {
+            } else if (song instanceof RemoteSong){
                 //Logger.getLogger("Player").info("song.getUris:"+song.getUris().toString());
-                String uriString = song.getUris().toString().replace("[","").replace("]","").replace(" ","%20");
-                URI uri = URI.create(uriString);
-                 hit = new Media(uri.toASCIIString());
+                final String uriString = song.getUris().get(0).replace(" ","%20");
+                hit = new Media(uriString);
+            } else {
+                throw new RuntimeException("The song is neither local or remote");
             }
             mediaPlayer = new MediaPlayer(hit);
-
-            active.set(true);
             mediaPlayer.play();
-
+            loadLyrics.join();
+            loadLyrics.thenAcceptAsync((Void v) -> lyricsDisplay.start()).exceptionally(ex -> {
+                Logger.getLogger("Player").log(Level.WARNING, "Failed to load lyrics", ex);
+                return null;
+            });
+            final Runnable mp3EndCleanup = new Runnable() {
+                @Override
+                public void run() {
+                    Logger.getLogger("Player").info("MP3 Player ended, cleaning up...");
+                    active.set(false);
+                    resetLabels();
+                }
+            };
+            mediaPlayer.setOnEndOfMedia(mp3EndCleanup);
+            mediaPlayer.setOnStopped(mp3EndCleanup);
         }
     }
 
     public void pause() {
-        if(Song.getExtension(songPlaying.getFilename()).equals(".wav")) {
-            synchronized (shouldStop) {
-                shouldStop.set(true);
-            }
+        synchronized (shouldStop) {
+            shouldStop.set(true);
+        }
+        if (songPlaying.getExtension().equals(".wav")) {
             if (line != null) {
                 line.stop();
             }
-        }
-        if(Song.getExtension(songPlaying.getFilename()).equals(".mp3")) {
-            shouldStop.set(true);
-            mediaPlayer.pause();
+        } else if (songPlaying.getExtension().equals(".mp3")) {
+            if (mediaPlayer != null) {
+                mediaPlayer.pause();
+            }
         }
     }
 
     public void unpause() {
-        if(Song.getExtension(songPlaying.getFilename()).equals(".wav")) {
+        synchronized (shouldStop) {
+            shouldStop.set(false);
+            shouldStop.notifyAll();
+        }
+        if (songPlaying.getExtension().equals(".wav")) {
             if (line != null) {
                 line.start();
             }
-            synchronized (shouldStop) {
-                shouldStop.set(false);
-                shouldStop.notifyAll();
+        } else if (songPlaying.getExtension().equals(".mp3")) {
+            if (mediaPlayer != null) {
+                mediaPlayer.play();
             }
-        }
-        if(Song.getExtension(songPlaying.getFilename()).equals(".mp3")) {
-            shouldStop.set(false);
-            mediaPlayer.play();
         }
     }
 
     public void stop() {
-        if(Song.getExtension(songPlaying.getFilename()).equals(".wav")) {
+        if(songPlaying.getExtension().equals(".wav")) {
             if (playbackThread != null) {
                 playbackThread.stop();
             }
@@ -181,10 +182,10 @@ public class Player {
             active.set(false);
         }
 
-        if(Song.getExtension(songPlaying.getFilename()).equals(".mp3")) {
-        mediaPlayer.stop();
-        songPlaying = null;
-        active.set(false);
+        if(songPlaying.getExtension().equals(".mp3")) {
+            mediaPlayer.stop();
+            songPlaying = null;
+            active.set(false);
         }
     }
 

@@ -79,7 +79,7 @@ public abstract class Song {
         return true;
     }
 
-    public static String getExtension(String filename) {
+    public String getExtension() {
         if (filename == null) {
             return null;
         }
