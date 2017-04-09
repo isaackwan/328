@@ -104,6 +104,11 @@ public class Player {
                     resetLabels();
                 }
             });
+            try {
+                playbackThread.setDaemon(true);
+            } catch (Exception ex) {
+                Logger.getLogger("Player").log(Level.WARNING, "Failed to set playback thread as daemon.", ex);
+            }
             playbackThread.start();
         }
         if (songExtension.equals(".mp3") ) {
@@ -151,6 +156,7 @@ public class Player {
                 mediaPlayer.pause();
             }
         }
+        lyricsDisplay.pause();
     }
 
     public void unpause() {
@@ -167,6 +173,7 @@ public class Player {
                 mediaPlayer.play();
             }
         }
+        lyricsDisplay.unpause();
     }
 
     public void stop() {
