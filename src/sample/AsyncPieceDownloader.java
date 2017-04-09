@@ -1,12 +1,17 @@
 package sample;
 
 import org.asynchttpclient.*;
+import sun.rmi.runtime.Log;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,7 +19,7 @@ import java.util.logging.Logger;
  * Created by isaac on 3/30/17.
  */
 public class AsyncPieceDownloader {
-    private final int BYTES_PER_PIECE = 1024*300;
+    private final int BYTES_PER_PIECE;
     private final AsyncHttpClient httpClient = new DefaultAsyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setMaxConnections(100).build());
     private final List<String> uris;
     private final Queue<byte[]> buffer;
@@ -27,12 +32,24 @@ public class AsyncPieceDownloader {
      * @param uris an List of uris to download from
      * @param buffer a reference to the buffer to hold the payload (supplied by caller)
      * @param size size of the file in bytes
+     * @param piece_size the number of bytes per piece
      */
-    public AsyncPieceDownloader(List<String> uris, Queue<byte[]> buffer, long size) {
+    public AsyncPieceDownloader(List<String> uris, Queue<byte[]> buffer, long size, int piece_size) {
+        this.BYTES_PER_PIECE = piece_size;
         this.uris = uris;
         this.buffer = buffer;
         this.size = size;
         this.totalPieces = size/BYTES_PER_PIECE + ((size % BYTES_PER_PIECE == 0) ? 0 : 1); // Round up
+    }
+
+    /**
+     * creates a download job. the abstract downloader cannot be reused.
+     * @param uris an List of uris to download from
+     * @param buffer a reference to the buffer to hold the payload (supplied by caller)
+     * @param size size of the file in bytes
+     */
+    public AsyncPieceDownloader(List<String> uris, Queue<byte[]> buffer, long size) {
+        this(uris, buffer, size, 1024*400);
     }
 
     /**
@@ -102,4 +119,18 @@ public class AsyncPieceDownloader {
         buffer.add(data);
     }
 
+    public static CompletableFuture<Void> demo(RemoteSong song) {
+        LinkedBlockingQueue<byte[]> queue = new LinkedBlockingQueue();
+        AsyncPieceDownloader downloader = new AsyncPieceDownloader(song.getUris(), queue, song.getFilesize(), 1024*200);
+        return downloader.download().thenAccept((Void v) -> {
+            try (FileOutputStream stream = new FileOutputStream("out.bmp")) {
+                byte[] buf;
+                while ((buf = queue.poll()) != null) {
+                    stream.write(buf);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger("AsyncPieceDownloader").log(Level.SEVERE, "Failed to download: IO Exception");
+            }
+        });
+    }
 }
