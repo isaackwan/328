@@ -1,3 +1,6 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b67d27e5269699ccc87d410c36cb92f714382a852638d441f291266a46238793
-size 359
+catalyst.wav,,60452396,,Catalyst (This song has working lyrics file),,Linkin Park,,IDK
+heartache.wav,,76376804,,Heartache,,N/A,,N/A
+numb.wav,,1401020,,Numb1 (Short audio clip to test EOF mainly),,Linkin Park,,Album99
+numb2.wav,,33134070,,numb2.wav,,Numb2,,Awesome
+ZenZenZense.wav,,82838826,,Zen Zen ZENSE!!!,,N/A,,N/A
+iphone.mp3,,476005,,iphone.mp3,,N/A,,N/A
