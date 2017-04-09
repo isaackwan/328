@@ -170,7 +170,10 @@ public class Player {
     }
 
     public void stop() {
-        if(songPlaying.getExtension().equals(".wav")) {
+        if (songPlaying == null) {
+            return;
+        }
+        if (songPlaying.getExtension().equals(".wav")) {
             if (playbackThread != null) {
                 playbackThread.stop();
             }
