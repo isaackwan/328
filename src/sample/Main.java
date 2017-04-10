@@ -100,6 +100,8 @@ public class Main extends Application {
     void resetDb() {
         songRepo.clear();
         peerRepo.clear();
-        Logger.getLogger("Main").info("Finished resetting both databases.");
+        player.stop();
+        player = new Player();
+        Logger.getLogger("Main").info("Finished resetting.");
     }
 }

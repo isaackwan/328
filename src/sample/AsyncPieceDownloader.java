@@ -122,7 +122,7 @@ public class AsyncPieceDownloader {
     public static CompletableFuture<Void> demo(RemoteSong song, String filename) {
         LinkedBlockingQueue<byte[]> queue = new LinkedBlockingQueue();
         AsyncPieceDownloader downloader = new AsyncPieceDownloader(song.getUris(), queue, song.getFilesize(), 1024*200);
-        return downloader.download().thenAccept((Void v) -> {
+        return downloader.download().thenApply((Void v) -> {
             try (FileOutputStream stream = new FileOutputStream(filename)) {
                 byte[] buf;
                 while ((buf = queue.poll()) != null) {
@@ -132,6 +132,7 @@ public class AsyncPieceDownloader {
             } catch (IOException ex) {
                 Logger.getLogger("AsyncPieceDownloader").log(Level.SEVERE, "Failed to download: IO Exception");
             }
+            return null;
         });
     }
 }

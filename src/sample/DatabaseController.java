@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -186,9 +187,14 @@ public class DatabaseController {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(filename -> {
             AsyncPieceDownloader.demo((RemoteSong)song, filename).thenAccept((Void v) -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setContentText("Download completed.");
-                alert.showAndWait();
+                Logger.getLogger("DatabaseController").info("Finished download for demo");
+                Platform.runLater(new Runnable() { // another hack for JavaFX. Urgh.
+                    public void run() {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setContentText("Download completed.");
+                        alert.showAndWait();
+                    }
+                });
             });
         });
     }
