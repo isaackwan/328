@@ -10,6 +10,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class DatabaseController {
@@ -113,7 +114,7 @@ public class DatabaseController {
     private void playSong(ActionEvent event) throws Exception {
         Song song = songTable.getSelectionModel().getSelectedItem();
         if (song == null) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Please select a song first.");
             alert.showAndWait();
             return;
@@ -163,6 +164,33 @@ public class DatabaseController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText("Saved!");
         alert.showAndWait();
+    }
+
+    @FXML
+    private void demo(ActionEvent event) throws Exception {
+        Song song = songTable.getSelectionModel().getSelectedItem();
+        if (song == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Please select a song first.");
+            alert.showAndWait();
+            return;
+        }
+        if (!(song instanceof RemoteSong)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Please select a remote song.");
+            alert.showAndWait();
+            return;
+        }
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setContentText("Please enter the desired file name:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(filename -> {
+            AsyncPieceDownloader.demo((RemoteSong)song, filename).thenAccept((Void v) -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Download completed.");
+                alert.showAndWait();
+            });
+        });
     }
 
     @FXML
