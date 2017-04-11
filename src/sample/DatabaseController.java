@@ -200,6 +200,28 @@ public class DatabaseController {
     }
 
     @FXML
+    private void videoStreaming(ActionEvent event) throws Exception {
+        Song song = songTable.getSelectionModel().getSelectedItem();
+        if (song == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Please select a song first.");
+            alert.showAndWait();
+            return;
+        }
+        if (!(song instanceof RemoteSong)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Please select a *REMOTE* song.");
+            alert.showAndWait();
+            return;
+        }
+        VideoStreamer streamer = new VideoStreamer((RemoteSong) song);
+        streamer.fetch();
+        Logger.getLogger("DatabaseController").info("Started streaming service");
+        main.videoStreamer = streamer;
+        main.switchToVideoView();
+    }
+
+    @FXML
     private void resetDb(ActionEvent event) {
         main.resetDb();
     }

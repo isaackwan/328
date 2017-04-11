@@ -49,6 +49,7 @@
                   <Button mnemonicParsing="false" onAction="#playSong" text="Play" />
                   <Button mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
                   <Button layoutX="60.0" layoutY="11.0" mnemonicParsing="false" onAction="#demo" text="Demo" />
+                  <Button layoutX="125.0" layoutY="11.0" mnemonicParsing="false" onAction="#videoStreaming" text="Video" />
               </items>
             </ToolBar>
             <ToolBar layoutX="10.0" layoutY="10.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
