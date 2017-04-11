@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DatabaseController">
    <columnConstraints>
       <ColumnConstraints />
@@ -46,6 +48,7 @@
               <items>
                   <Button mnemonicParsing="false" onAction="#playSong" text="Play" />
                   <Button mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
+                  <Button layoutX="60.0" layoutY="11.0" mnemonicParsing="false" onAction="#demo" text="Demo" />
               </items>
             </ToolBar>
             <ToolBar layoutX="10.0" layoutY="10.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">

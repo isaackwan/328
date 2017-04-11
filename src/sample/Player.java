@@ -110,8 +110,7 @@ public class Player {
                 Logger.getLogger("Player").log(Level.WARNING, "Failed to set playback thread as daemon.", ex);
             }
             playbackThread.start();
-        }
-        if (songExtension.equals(".mp3") ) {
+        } else if (songExtension.equals(".mp3") ) {
             String bip = song.getPath();
             Media hit;
             if (song instanceof LocalSong) {
@@ -140,6 +139,10 @@ public class Player {
             };
             mediaPlayer.setOnEndOfMedia(mp3EndCleanup);
             mediaPlayer.setOnStopped(mp3EndCleanup);
+        } else {
+            songPlaying = null;
+            active.set(false);
+            throw new IllegalArgumentException("This is neither mp3 or wav");
         }
     }
 
