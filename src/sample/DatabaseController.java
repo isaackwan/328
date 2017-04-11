@@ -178,7 +178,7 @@ public class DatabaseController {
         }
         if (!(song instanceof RemoteSong)) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Please select a remote song.");
+            alert.setContentText("Please select a *REMOTE* song.");
             alert.showAndWait();
             return;
         }
