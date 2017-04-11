@@ -141,6 +141,6 @@ public class AsyncPieceDownloader {
     }
 
     public static CompletableFuture<Void> demo(RemoteSong song, String filename) {
-        return downloadAsFile(song, filename, 1024*50);
+        return downloadAsFile(song, filename, 1024*10);
     }
 }
