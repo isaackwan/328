@@ -49,7 +49,7 @@ public class AsyncPieceDownloader {
      * @param size size of the file in bytes
      */
     public AsyncPieceDownloader(List<String> uris, Queue<byte[]> buffer, long size) {
-        this(uris, buffer, size, 1024*400, 44);
+        this(uris, buffer, size, 1024*600, 44);
     }
 
     /**
