@@ -197,6 +197,7 @@ public class Player {
             songPlaying = null;
             active.set(false);
         }
+        lyrics.set("");
     }
 
     /**
