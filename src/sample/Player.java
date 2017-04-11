@@ -117,8 +117,8 @@ public class Player {
                  hit = new Media(new File(bip).toURI().toString());
             } else if (song instanceof RemoteSong){
                 //Logger.getLogger("Player").info("song.getUris:"+song.getUris().toString());
-                final String uriString = song.getUris().get(0).replace(" ","%20");
-                hit = new Media(uriString);
+                AsyncPieceDownloader.downloadAsFile((RemoteSong)song, "_temp.mp3", 1024*700).join();
+                hit = new Media(new File("_temp.mp3").toURI().toString());
             } else {
                 throw new RuntimeException("The song is neither local or remote");
             }
@@ -133,6 +133,10 @@ public class Player {
                 @Override
                 public void run() {
                     Logger.getLogger("Player").info("MP3 Player ended, cleaning up...");
+                    if (song instanceof RemoteSong) {
+                        Logger.getLogger("Player").info("This is a remote song. Deleting _temp.mp3");
+                        (new File("_temp.mp3")).delete();
+                    }
                     active.set(false);
                     resetLabels();
                 }

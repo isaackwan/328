@@ -123,9 +123,9 @@ public class AsyncPieceDownloader {
         buffer.add(data);
     }
 
-    public static CompletableFuture<Void> demo(RemoteSong song, String filename) {
+    public static CompletableFuture<Void> downloadAsFile(RemoteSong song, String filename, int piece_size) {
         LinkedBlockingQueue<byte[]> queue = new LinkedBlockingQueue();
-        AsyncPieceDownloader downloader = new AsyncPieceDownloader(song.getUris(), queue, song.getFilesize(), 1024*50, 0);
+        AsyncPieceDownloader downloader = new AsyncPieceDownloader(song.getUris(), queue, song.getFilesize(), piece_size, 0);
         return downloader.download().thenApply((Void v) -> {
             try (FileOutputStream stream = new FileOutputStream(filename)) {
                 byte[] buf;
@@ -138,5 +138,9 @@ public class AsyncPieceDownloader {
             }
             return null;
         });
+    }
+
+    public static CompletableFuture<Void> demo(RemoteSong song, String filename) {
+        return downloadAsFile(song, filename, 1024*50);
     }
 }
