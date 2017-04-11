@@ -14,11 +14,11 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 public class Main extends Application {
+    public static int styleNum = 1;
     public SongRepo songRepo = new SongRepo();
     public PeerRepo peerRepo = new PeerRepo(songRepo);
     private Stage primaryStage;
     public Player player = new Player();
-    public VideoStreamer videoStreamer;
     private FileServer fileServer = new FileServer(Optional.ofNullable(System.getenv("CSCI3280_PORT")).orElse("9001"));
 
     /**
@@ -95,29 +95,12 @@ public class Main extends Application {
         primaryStage.sizeToScene();
     }
 
-    void switchToVideoView() throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("video.fxml"));
-        Scene scene = new Scene(loader.load(), 800, 600);
-        VideoController controller = loader.getController();
-        controller.setMain(this);
-        primaryStage.setTitle("Video Streaming");
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.sizeToScene();
-    }
-
     /**
      * resets both the song & peers databases. Does not reseed from database.
      */
     void resetDb() {
         songRepo.clear();
         peerRepo.clear();
-        player.stop();
-        player = new Player();
-        if (videoStreamer != null) {
-            videoStreamer.stop();
-        }
-        Logger.getLogger("Main").info("Finished resetting.");
+        Logger.getLogger("Main").info("Finished resetting both databases.");
     }
 }

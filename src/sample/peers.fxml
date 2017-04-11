@@ -1,47 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.PeersController">
-   <columnConstraints>
-      <ColumnConstraints />
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-   </rowConstraints>
-   <children>
-      <TableView fx:id="peersTable" prefHeight="200.0" prefWidth="200.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
-        <columns>
-          <TableColumn fx:id="uriColumn" prefWidth="800.0" text="URI" />
-        </columns>
-      </TableView>
-      <AnchorPane prefHeight="50.0" prefWidth="200.0" GridPane.rowIndex="2">
-         <children>
-            <Button layoutX="737.0" layoutY="12.0" mnemonicParsing="false" onAction="#addPeer" text="Add" />
-            <TextField fx:id="peerUri" layoutX="121.0" layoutY="11.0" />
-            <Label layoutX="14.0" layoutY="16.0" text="URI:" />
-         </children>
-      </AnchorPane>
-      <MenuBar>
-        <menus>
-          <Menu mnemonicParsing="false" text="Mode">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#switchToDatabaseView" text="Database" />
-                  <MenuItem mnemonicParsing="false" onAction="#switchToPlaybackView" text="Playback" />
-                  <MenuItem mnemonicParsing="false" text="Peers" />
-                  <MenuItem mnemonicParsing="false" onAction="#resetDb" text="Reset" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </children>
+    <columnConstraints>
+        <ColumnConstraints />
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+    </rowConstraints>
+    <children>
+        <TableView fx:id="peersTable" prefHeight="200.0" prefWidth="200.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="uriColumn" prefWidth="800.0" text="URI" />
+            </columns>
+        </TableView>
+        <AnchorPane fx:id="anchorPane" prefHeight="50.0" prefWidth="200.0" GridPane.rowIndex="2">
+            <children>
+                <Button layoutX="737.0" layoutY="12.0" mnemonicParsing="false" onAction="#addPeer" text="Add" />
+                <TextField fx:id="peerUri" layoutX="121.0" layoutY="11.0" />
+                <Label layoutX="14.0" layoutY="16.0" text="URI:" />
+            </children>
+        </AnchorPane>
+        <MenuBar fx:id="menu">
+            <menus>
+                <Menu mnemonicParsing="false" text="Mode">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#switchToDatabaseView" text="Database" />
+                        <MenuItem mnemonicParsing="false" onAction="#switchToPlaybackView" text="Playback" />
+                        <MenuItem mnemonicParsing="false" text="Peers" />
+                        <MenuItem mnemonicParsing="false" onAction="#resetDb" text="Reset" />
+                  <MenuItem mnemonicParsing="false" onAction="#changeColor" text="Change Background" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </children>
 </GridPane>

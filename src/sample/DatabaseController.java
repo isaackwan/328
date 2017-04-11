@@ -1,6 +1,5 @@
 package sample;
 
-import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,11 +10,13 @@ import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Optional;
+import java.rmi.activation.ActivationID;
 import java.util.logging.Logger;
 
 public class DatabaseController {
     private Main main;
+    @FXML
+    private MenuBar menu;
     @FXML
     private TableView<Song> songTable;
     @FXML
@@ -34,11 +35,16 @@ public class DatabaseController {
     private TextField newSongFilename;
     @FXML
     private FilteredList<Song> filteredRepo = null;
+    @FXML
+    private ToolBar leftBar;
+    @FXML
+    private ToolBar rightBar;
 
     public void setMain(Main main) {
         this.main = main;
         //songTable.setItems(main.songRepo);
         songTable.setItems(filteredRepo = new FilteredList<Song>(main.songRepo, p -> true));
+        setColor();
     }
 
     @FXML
@@ -115,7 +121,7 @@ public class DatabaseController {
     private void playSong(ActionEvent event) throws Exception {
         Song song = songTable.getSelectionModel().getSelectedItem();
         if (song == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setContentText("Please select a song first.");
             alert.showAndWait();
             return;
@@ -168,62 +174,54 @@ public class DatabaseController {
     }
 
     @FXML
-    private void demo(ActionEvent event) throws Exception {
-        Song song = songTable.getSelectionModel().getSelectedItem();
-        if (song == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Please select a song first.");
-            alert.showAndWait();
-            return;
-        }
-        if (!(song instanceof RemoteSong)) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Please select a *REMOTE* song.");
-            alert.showAndWait();
-            return;
-        }
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setContentText("Please enter the desired file name:");
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(filename -> {
-            AsyncPieceDownloader.demo((RemoteSong)song, filename).thenAccept((Void v) -> {
-                Logger.getLogger("DatabaseController").info("Finished download for demo");
-                Platform.runLater(new Runnable() { // another hack for JavaFX. Urgh.
-                    public void run() {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setContentText("Download completed.");
-                        alert.showAndWait();
-                    }
-                });
-            });
-        });
-    }
-
-    @FXML
-    private void videoStreaming(ActionEvent event) throws Exception {
-        Song song = songTable.getSelectionModel().getSelectedItem();
-        if (song == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Please select a song first.");
-            alert.showAndWait();
-            return;
-        }
-        if (!(song instanceof RemoteSong)) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Please select a *REMOTE* song.");
-            alert.showAndWait();
-            return;
-        }
-        VideoStreamer streamer = new VideoStreamer((RemoteSong) song);
-        streamer.fetch();
-        Logger.getLogger("DatabaseController").info("Started streaming service");
-        main.videoStreamer = streamer;
-        main.switchToVideoView();
-    }
-
-    @FXML
     private void resetDb(ActionEvent event) {
         main.resetDb();
     }
 
+    private void setColor(){
+        String str1 = "";
+        String str2 = "";
+        switch(main.styleNum){
+            case 1: str1 = "#fa8072";
+                str2 = "#ff0000";
+                break;
+            case 2: str1 = "#f0e68c";
+                str2 = "#ffd700";
+                break;
+            case 3: str1 = "#90ee90";
+                str2 = "#32cd32";
+                break;
+            case 4: str1 = "#b0e0e6";
+                str2 = "#87cefa";
+                break;
+            case 5: str1 = "#a9a9a9";
+                str2 = "#808080";
+                break;
+        }
+        menu.setStyle("-fx-background-color: "+str1+";");
+        songTable.setStyle("-fx-background-color: "+str2+";");
+        leftBar.setStyle("-fx-background-color: "+str1+";");
+        rightBar.setStyle("-fx-background-color: "+str1+";");
+    }
+
+    @FXML
+    private void changeColor(){
+        switch(main.styleNum){
+            case 1: main.styleNum = 2;
+                setColor();
+                break;
+            case 2: main.styleNum = 3;
+                setColor();
+                break;
+            case 3: main.styleNum = 4;
+                setColor();
+                break;
+            case 4: main.styleNum = 5;
+                setColor();
+                break;
+            case 5: main.styleNum = 1;
+                setColor();
+                break;
+        }
+    }
 }

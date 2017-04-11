@@ -20,7 +20,7 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <MenuBar>
+      <MenuBar fx:id="menu">
         <menus>
           <Menu mnemonicParsing="false" text="Mode">
             <items>
@@ -28,6 +28,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#switchToPlaybackView" text="Playback" />
                   <MenuItem mnemonicParsing="false" onAction="#switchToPeersView" text="Peers" />
                   <MenuItem mnemonicParsing="false" onAction="#resetDb" text="Reset" />
+                  <MenuItem mnemonicParsing="false" onAction="#changeColor" text="Change Background" />
             </items>
           </Menu>
         </menus>
@@ -44,15 +45,13 @@
       </TableView>
       <SplitPane dividerPositions="0.5" prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="2">
         <items>
-            <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0">
+            <ToolBar fx:id="leftBar" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0">
               <items>
                   <Button mnemonicParsing="false" onAction="#playSong" text="Play" />
                   <Button mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
-                  <Button layoutX="60.0" layoutY="11.0" mnemonicParsing="false" onAction="#demo" text="Demo" />
-                  <Button layoutX="125.0" layoutY="11.0" mnemonicParsing="false" onAction="#videoStreaming" text="Video" />
               </items>
             </ToolBar>
-            <ToolBar layoutX="10.0" layoutY="10.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
+            <ToolBar fx:id="rightBar" layoutX="10.0" layoutY="10.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
                <items>
                   <Button layoutX="100.0" mnemonicParsing="false" onAction="#persistDatabase" text="Save" />
                   <Button layoutX="10.0" layoutY="12.0" mnemonicParsing="false" onAction="#addSong" text="Add" />
