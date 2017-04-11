@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.VideoController">
+   <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <MenuBar prefHeight="20.0" prefWidth="800.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Mode">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#switchToDatabaseView" text="Database" />
+                <MenuItem mnemonicParsing="false" text="Playback" />
+                <MenuItem mnemonicParsing="false" onAction="#switchToPeersView" text="Peers" />
+                <MenuItem mnemonicParsing="false" onAction="#resetDb" text="Reset" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <AnchorPane prefHeight="560.0" prefWidth="800.0" GridPane.rowIndex="1">
+         <children>
+            <Label layoutX="108.0" layoutY="227.0" text="Great, your media is currently served on: http://localhost:9011/">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+            <Label layoutX="202.0" layoutY="260.0" text="Please note that you can only view the video once only.">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+      <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="2">
+        <items>
+          <Button fx:id="stopBtn" mnemonicParsing="false" onAction="#stop" text="Stop" />
+        </items>
+      </ToolBar>
+   </children>
+</GridPane>

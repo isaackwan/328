@@ -1,6 +1,5 @@
 package sample;
 
-import com.sun.javafx.util.Logging;
 import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -216,7 +215,10 @@ public class DatabaseController {
             return;
         }
         VideoStreamer streamer = new VideoStreamer((RemoteSong) song);
+        streamer.fetch();
         Logger.getLogger("DatabaseController").info("Started streaming service");
+        main.videoStreamer = streamer;
+        main.switchToVideoView();
     }
 
     @FXML
