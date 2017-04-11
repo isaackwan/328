@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.javafx.util.Logging;
 import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -197,6 +198,25 @@ public class DatabaseController {
                 });
             });
         });
+    }
+
+    @FXML
+    private void videoStreaming(ActionEvent event) throws Exception {
+        Song song = songTable.getSelectionModel().getSelectedItem();
+        if (song == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Please select a song first.");
+            alert.showAndWait();
+            return;
+        }
+        if (!(song instanceof RemoteSong)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Please select a *REMOTE* song.");
+            alert.showAndWait();
+            return;
+        }
+        VideoStreamer streamer = new VideoStreamer((RemoteSong) song);
+        Logger.getLogger("DatabaseController").info("Started streaming service");
     }
 
     @FXML
