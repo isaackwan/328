@@ -7,8 +7,8 @@
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="org.nanohttpd:nanohttpd:2.3.1" level="application" />
-    <orderEntry type="library" name="org.nanohttpd:nanohttpd-webserver:2.3.1" level="application" />
-    <orderEntry type="library" name="org.asynchttpclient:async-http-client:2.0.31" level="application" />
+    <orderEntry type="library" name="org.asynchttpclient:async-http-client:2.0.31" level="project" />
+    <orderEntry type="library" name="org.nanohttpd:nanohttpd-webserver:2.3.1" level="project" />
+    <orderEntry type="library" name="org.nanohttpd:nanohttpd:2.3.1" level="project" />
   </component>
 </module>
