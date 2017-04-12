@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+
 <GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.PlaybackController">
    <columnConstraints>
       <ColumnConstraints />
@@ -22,7 +25,7 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <MenuBar>
+      <MenuBar fx:id="menu">
         <menus>
           <Menu mnemonicParsing="false" text="Mode">
             <items>
@@ -30,11 +33,12 @@
                 <MenuItem mnemonicParsing="false" text="Playback" />
                 <MenuItem mnemonicParsing="false" onAction="#switchToPeersView" text="Peers" />
                 <MenuItem mnemonicParsing="false" onAction="#resetDb" text="Reset" />
+                  <MenuItem mnemonicParsing="false" onAction="#changeColor" text="Change Background" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="2">
+      <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="2">
         <items>
           <Button fx:id="pauseBtn" mnemonicParsing="false" onAction="#pause" text="Pause" />
             <Button fx:id="unpauseBtn" mnemonicParsing="false" onAction="#unpause" text="Unpause" />
@@ -43,7 +47,7 @@
       </ToolBar>
       <SplitPane dividerPositions="0.29797979797979796" prefHeight="100.0" prefWidth="800.0" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
         <items>
-          <AnchorPane maxWidth="400.0" minHeight="0.0" minWidth="400.0" prefWidth="400.0">
+          <AnchorPane fx:id="leftAnchorPane" maxWidth="400.0" minHeight="0.0" minWidth="400.0" prefWidth="400.0">
                <children>
                   <Label layoutX="79.0" layoutY="162.0" text="File (ID):" />
                   <Label layoutX="79.0" layoutY="181.0" text="Name:" />
@@ -55,7 +59,7 @@
                   <Label fx:id="album" layoutX="140.0" layoutY="218.0" text="&lt;file&gt;" />
                </children>
             </AnchorPane>
-          <AnchorPane maxWidth="400.0" minHeight="0.0" minWidth="400.0" prefWidth="400.0">
+          <AnchorPane fx:id="rightAnchorPane" maxWidth="400.0" minHeight="0.0" minWidth="400.0" prefWidth="400.0">
                <children>
                   <Label fx:id="lyricsLabel" alignment="CENTER" layoutX="2.0" layoutY="104.0" prefHeight="190.0" prefWidth="388.0" text="Lyrics" textAlignment="CENTER" wrapText="true">
                      <font>

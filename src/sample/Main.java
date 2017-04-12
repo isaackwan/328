@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 public class Main extends Application {
+    public static int styleNum = 1;
     public SongRepo songRepo = new SongRepo();
     public PeerRepo peerRepo = new PeerRepo(songRepo);
     private Stage primaryStage;
