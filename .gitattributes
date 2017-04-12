@@ -3,3 +3,9 @@ database/*.wav filter=lfs diff=lfs merge=lfs -text
 database/**/*.bmp filter=lfs diff=lfs merge=lfs -text
 *.jar filter=lfs diff=lfs merge=lfs -text
 *.mp4 filter=lfs diff=lfs merge=lfs -text
+
+# Auto CRLF
+* text=auto
+*.java text
+.xml text
+.fxml text
